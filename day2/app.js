@@ -10,4 +10,4 @@ app.use("/",ru)
 
 
 
-app.listen(5000,console.log("running on port 1500"))
+app.listen(4000,console.log("running on port 1500"))

@@ -7,10 +7,14 @@ const path = require("path")
 const {GridFsStorage} = require("multer-gridfs-storage")
 const Grid = require("gridfs-stream")
 
+const zones = require("../models/zones")
+const polygon = require("polygon")
+var Vec2 = require('vec2');
+
+
 const uploadss = require("../models/product.js")
 
 const city = require("../models/cities.js")
-const { findOneAndUpdate } = require("../models/product.js")
 
 
 const mongoURI = "mongodb://localhost/vixspace2"
@@ -305,7 +309,114 @@ router.delete('/cities/:city_name',async(req, res)=>{
   }
 })
 
+// ************************************************************************************************
+
+// ZONES CRUD BELOW
+
+// ************************************************************************************************
+
+// create new zone
+
+router.post("/zones",async(req, res)=>{
+  try {
+    const data = await zones.create(req.body)
+    console.log("created")
+    res.send("created")
+  } catch(error){
+    res.send({error:error.message})
+    console.log(error)
+  }
+})
+
+// read all
+
+router.get("/zones",async(req, res)=>{
+  try {
+    const data = await zones.find()
+    console.log(data)
+    res.send(data)
+  } catch (error) {
+    res.send({error: error.message})
+    console.log(error)
+  }
+})
+
+// read one zone
+
+router.get("/zones/:Zone_Number",async(req, res)=>{
+  try {
+    const data = await zones.findOne({Zone_Number: req.params.Zone_Number})
+    console.log(data["Polygon_Properties"].strokeOpacity)
+    res.send(data)
+  } catch (error) {
+    res.send({error: error.message})
+    console.log(error)
+  }
+})
+
+// get polygon props for geo fencing
+var x = []
+var a;
+var b;
+var c;
+var d;
+var e;
+var f;
+var g;
+var h;
+// get polygon paths
+router.get("/zonesp/:Zone_Number",async(req, res)=>{
+  try {
+
+    const data = await zones.findOne({Zone_Number: req.params.Zone_Number}).select("Polygon_Paths")
+    console.log(data["Polygon_Paths"])
+    var z  = data["Polygon_Paths"]
+    var y = {}
+    y["lat"] = z.lat,
+    y["lng"] = z.lng
+    x.push(y)
+    a= data["Polygon_Properties"].strokeColor
+    b = data["Polygon_Properties"].strokeOpacity
+    c = data["Polygon_Properties"].strokeWeight
+    d = data["Polygon_Properties"].fillColor
+    e = data["Polygon_Properties"].fillOpacity
+    f = data["Polygon_Properties"].draggable
+    g = data["Polygon_Properties"].editable
+    h = data["Polygon_Properties"].visible
+    res.send(data)
+  } catch (error) {
+    res.send({error: error.message})
+    console.log(error)
+  }
+})
 
 
+// UPDATE ONE
+
+router.patch("/zones/:Zone_Number",async(req, res)=>{
+  try {
+    const data = await zones.findOneAndUpdate({Zone_Number:req.params.Zone_Number},req.body)
+    console.log(data)
+    res.send(data)
+  } catch (error) {
+    res.send({error: error.message})
+    console.log(error)
+  }
+})
+
+// delete one zone
+
+router.delete("/zones/:Zone_Number",async(req, res)=>{
+  try {
+    const data = await zones.findByIdAndDelete({Zone_Number:req.params.Zone_Number})
+    console.log("deleted")
+    res.send("deleted")
+  } catch (error) {
+    res.send({error: error.message})
+    console.log(error)
+  }
+})
+
+module.exports = {a,b,c,d,e,f,g,h,x};
 
 module.exports = router
