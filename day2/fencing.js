@@ -4,7 +4,7 @@ var {a,b,c,d,e,f,g,h,x} = require("./routes/routes")
 
 
 
-// This example creates a simple polygon representing the Bermuda Triangle.
+// This example creates a simple polygon on google map using location co-ordinates
 function initMap() {
     const map = new google.maps.Map(document.getElementById("map"), {
       zoom: 5,
